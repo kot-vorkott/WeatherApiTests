@@ -5,18 +5,12 @@ import io.restassured.specification.ResponseSpecification;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.*;
 import static io.restassured.RestAssured.*;
 
-import org.junit.jupiter.api.*;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
-import static io.restassured.RestAssured.*;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class TestOneCallApi {
 
@@ -37,7 +31,7 @@ public class TestOneCallApi {
                         param("appid", token).
                         param("units", "metric").
                 when().
-                        request("GET", "https://api.openweathermap.org/data/2.5/onecall").
+                        get( "https://api.openweathermap.org/data/2.5/onecall").
                         then().
                         spec(responseSpec).
                         extract().
@@ -50,7 +44,7 @@ public class TestOneCallApi {
 
     //Проверяем, что температура в ближайший час больше 20 градусов
     @Test
-    @DisplayName("Temperature in the next hour is above 20")
+    @DisplayName("Temperature in the next hour is above 0")
     public void CityIsRight() {
         Response response =
                 given().
@@ -60,7 +54,7 @@ public class TestOneCallApi {
                         param("units", "metric").
 
                 when().
-                        request("GET", "https://api.openweathermap.org/data/2.5/onecall").
+                        get("https://api.openweathermap.org/data/2.5/onecall").
                         then().
                         spec(responseSpec).
                         extract().
@@ -70,25 +64,26 @@ public class TestOneCallApi {
     }
 
     //Проверяем, что если исключили какие-то параметры - их нет
-    /*@Test
-    @DisplayName("Temperature in the next hour is above 20")
+    @Test
     public void ExcludeParameters() {
-        Response response =
+
+        String allParam =
+                given().
+                        param("lat","33.441792").
+                        param("lon", "-94.037689").
+                        param("appid", token).
                 when().
-                        request("GET", "https://api.openweathermap.org/data/2.5/onecall?lat=56.866557&lon=53.2094166&exclude=current,minutely&appid=2c491e00c21e55d2c412714b1eacf7d6&units=metric").
+                        get("https://api.openweathermap.org/data/2.5/onecall").
                         then().
-                        assertThat().statusCode(200).
-                        contentType("application/json").
-                        extract().
-                        response();
+                        spec(responseSpec).
+                        extract().response().asString();
 
-        Float temperature = response.jsonPath().get("hourly.temp[1]");
-        //assertTrue(temperature > 20, "It's cold in the next hour " + temperature);
-    }*/
-//еще добавить может регион ру и тд проверки
-    //какую-нибудь ошибку?
-    //вынести данные в файл?
-
-    //get("/lotto").then().body("lotto.lottoId", equalTo(5));
+        LinkedHashMap json = JsonPath.parse(allParam).read("$");
+        System.out.println(json);
+        assertTrue(json.containsKey("current"), "no current weather");
+        assertTrue(json.containsKey("minutely"), "no minutely weather");
+        assertTrue(json.containsKey("hourly"), "no hourly weather");
+        assertTrue(json.containsKey("daily"), "no daily weather");
+    }
 
 }
