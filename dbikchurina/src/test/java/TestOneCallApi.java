@@ -79,7 +79,6 @@ public class TestOneCallApi {
                         extract().response().asString();
 
         LinkedHashMap json = JsonPath.parse(allParam).read("$");
-        System.out.println(json);
         assertTrue(json.containsKey("current"), "no current weather");
         assertTrue(json.containsKey("minutely"), "no minutely weather");
         assertTrue(json.containsKey("hourly"), "no hourly weather");

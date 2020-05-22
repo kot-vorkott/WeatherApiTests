@@ -139,7 +139,7 @@ public class TestCurrentWeatherApi {
     @DisplayName("Language must match")
     public void LanguageIsRight() {
 
-        Pattern pattern = Pattern.compile("[" + "а-яА-ЯёЁ" + "\\p{Punct}" +"]" + "*");
+        Pattern pattern = Pattern.compile("[" + "а-яА-ЯёЁ" + "\\h" + "\\p{Punct}" +"]" + "*");
 
         Response response =
                 given().
